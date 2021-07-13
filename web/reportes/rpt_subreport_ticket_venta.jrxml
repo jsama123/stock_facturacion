@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rpt_subreport_ticket_venta" language="groovy" pageWidth="170" pageHeight="170" columnWidth="130" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="459a0a39-a6c0-406d-b9b6-75f6464458f7">
+	<property name="ireport.zoom" value="3.3000000000000003"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[SELECT
+to_char(fecha_inicio_timbrado, 'DD/MM/YYYY') as inicio,
+to_char(fecha_fin_timbrado, 'DD/MM/YYYY') as fin,
+numero_timbrado,
+razon_social_empresa,
+ci_ruc_empresa,
+direccion_empresa,
+direccion_sucursal,
+telefono_sucursal,
+nro_sucursal,
+COALESCE(nro_telefono_empresa, '') as nro_telefono_empresa,
+actividad_economica
+FROM stock_facturacion.timbrados t
+LEFT JOIN stock_facturacion.empresas e on e.estado_empresa = t.estado
+LEFT JOIN stock_facturacion.sucursales s on s.sucursal_activa = t.estado
+WHERE estado = 0 AND sucursal_activa = 0]]>
+	</queryString>
+	<field name="inicio" class="java.lang.String"/>
+	<field name="fin" class="java.lang.String"/>
+	<field name="numero_timbrado" class="java.math.BigDecimal"/>
+	<field name="razon_social_empresa" class="java.lang.String"/>
+	<field name="ci_ruc_empresa" class="java.lang.String"/>
+	<field name="direccion_empresa" class="java.lang.String"/>
+	<field name="direccion_sucursal" class="java.lang.String"/>
+	<field name="telefono_sucursal" class="java.lang.String"/>
+	<field name="nro_sucursal" class="java.lang.Integer"/>
+	<field name="nro_telefono_empresa" class="java.lang.String"/>
+	<field name="actividad_economica" class="java.lang.String"/>
+	<pageHeader>
+		<band height="57">
+			<textField>
+				<reportElement positionType="Float" x="0" y="50" width="130" height="7" uuid="3d6ddf43-dc36-401a-a029-65bac710f8e7"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FECHA FIN VIGENCIA :"+$F{fin}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="44" width="130" height="7" uuid="a8f734c4-0614-44d1-8da2-192024175228"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FECHA INICIO VIGENCIA :"+$F{inicio}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="30" width="130" height="9" uuid="f0a53ba9-be95-4d8b-8a85-019f36cada1c"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{direccion_sucursal}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="14" width="130" height="10" uuid="5fe5353d-2b6c-4779-97f7-beb73ff888e6"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{direccion_empresa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="8" width="130" height="9" uuid="a1dc6dfa-e192-413e-828f-b91f89b50b79"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{actividad_economica}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="38" width="130" height="7" uuid="42388a00-67ac-4176-a466-b4a65948d5e9"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["TIMBRADO : "+$F{numero_timbrado}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="23" width="130" height="8" uuid="12471c12-cd18-4aac-a445-d4cb1c6689e1"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["SUCURSAL NRO "+$F{nro_sucursal}+" - TEL:"+$F{telefono_sucursal}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="2" width="130" height="6" uuid="3cc7bca4-2894-46ba-92a4-64911df846f9"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{razon_social_empresa}+" RUC:"+$F{ci_ruc_empresa}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+</jasperReport>

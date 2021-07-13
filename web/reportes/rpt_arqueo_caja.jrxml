@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rpt_arqueo_caja" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="5c8e5bad-733b-40c7-b94b-373a56345238">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="id_arqueo_caja" class="java.lang.String">
+		<defaultValueExpression><![CDATA["6"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="loginUsuario" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT DISTINCT
+fecha_inicio_arqueo_caja,
+fecha_fin_arqueo_caja,
+nombre_apellido_cajero,
+descripcion_caja,
+saldo_inicial_arqueo_caja,
+resultado_arqueo_caja,
+observacion_arqueo_caja,
+cantidad,
+denominacion,
+cantidad*denominacion as sub_total,
+total_arqueo_caja
+FROM stock_facturacion.arqueo_caja_detalle a
+LEFT JOIN stock_facturacion.arqueo_caja b on b.id_arqueo_caja = a.id_arqueo_caja
+LEFT JOIN stock_facturacion.cajeros c on c.id_cajero = b.id_cajero
+LEFT JOIN stock_facturacion.cajas c1 on c1.id_caja = b.id_caja
+WHERE a.id_arqueo_caja = $P!{id_arqueo_caja}]]>
+	</queryString>
+	<field name="fecha_inicio_arqueo_caja" class="java.sql.Timestamp"/>
+	<field name="fecha_fin_arqueo_caja" class="java.sql.Timestamp"/>
+	<field name="nombre_apellido_cajero" class="java.lang.String"/>
+	<field name="descripcion_caja" class="java.lang.String"/>
+	<field name="saldo_inicial_arqueo_caja" class="java.math.BigDecimal"/>
+	<field name="resultado_arqueo_caja" class="java.math.BigDecimal"/>
+	<field name="observacion_arqueo_caja" class="java.lang.String"/>
+	<field name="cantidad" class="java.lang.Integer"/>
+	<field name="denominacion" class="java.math.BigDecimal"/>
+	<field name="sub_total" class="java.math.BigDecimal"/>
+	<field name="total_arqueo_caja" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="69" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="101" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="20" uuid="fb7564a4-e391-46b0-afb4-48586780f7c9"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="14"/>
+				</textElement>
+				<text><![CDATA[SISTEMA CONTROL DE STOCK Y FACTURACION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="20" width="555" height="20" uuid="470d8f9d-8615-4fa1-8c4c-fb182f50190e"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Reporte de Arqueo de Caja]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="53" width="68" height="10" uuid="05728b77-4f11-48e5-add4-59fb05e20843"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cajero : ]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="68" y="53" width="169" height="10" uuid="2d575c45-ff5b-41ff-b2ae-f3164bdc56c0"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_apellido_cajero}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="65" width="68" height="10" uuid="890d3021-998e-430e-bc17-22852a3e481b"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Caja : ]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="68" y="65" width="169" height="10" uuid="93d1066f-8e3d-4ca6-b2fe-02e0d6180336"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descripcion_caja}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="306" y="53" width="96" height="10" uuid="605717e8-29de-4b5d-aa61-a32c42bff104"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Y Hora Inicio :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH.mm.ss">
+				<reportElement x="402" y="53" width="153" height="10" uuid="aba76a23-7167-4a2a-b87a-9510f7c415f8"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_inicio_arqueo_caja}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="306" y="65" width="96" height="10" uuid="97958187-85c4-4612-a088-94a62371c237"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Y Hora Fin :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH.mm.ss">
+				<reportElement x="402" y="65" width="153" height="10" uuid="c574c8ec-2dff-4e89-92aa-5ed0fa8ae652"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_fin_arqueo_caja}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="174" y="80" width="178" height="10" uuid="3cee76d0-b7ee-4124-9431-c4375d793e6e"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DETALLES DE ARQUEO DE CAJA]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="100" width="555" height="1" uuid="c5351152-4d23-4839-b33b-3caa6a7aff05"/>
+			</line>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="13" splitType="Stretch">
+			<staticText>
+				<reportElement x="58" y="3" width="82" height="10" uuid="3babe486-ef41-4ed5-9f42-fcdb4dd9acb1"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cantidad]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="174" y="3" width="121" height="10" uuid="4b6212b7-d247-4c6f-9441-4d2b7e8d8eeb"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Denominacion]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="339" y="3" width="121" height="10" uuid="5b457824-d87f-4aef-9a76-2568003a6cab"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sub total ]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement x="58" y="2" width="82" height="10" uuid="d2641db7-65e0-43ad-8e4e-2d31d953f8af"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="174" y="2" width="121" height="10" uuid="a3bfd73b-c60f-4a91-91c4-22f1877c4212"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{denominacion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="339" y="2" width="121" height="10" uuid="a73dbc4f-1606-47ae-9b1f-7e401fbbd695"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sub_total}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="32" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="12" width="227" height="20" uuid="cfff10a8-2466-4327-a9c3-c0b42d8a6f7e"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd 'de' MMMM 'de' yyyy hh:mm aaa").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="227" y="12" width="204" height="20" uuid="ee78f0db-dacd-4e7e-a84f-686d5356366d"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Impreso por "+$P{loginUsuario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="77" splitType="Stretch">
+			<staticText>
+				<reportElement x="161" y="5" width="178" height="10" uuid="243e0543-b319-4c07-aacf-71bb5f126517"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RESULTADO DE ARQUEO DE CAJA]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="3" width="555" height="1" uuid="09bd4186-5311-4b85-9a1f-0505e6e4450b"/>
+			</line>
+			<staticText>
+				<reportElement x="58" y="18" width="82" height="10" uuid="8c7f62f8-df30-479a-aadc-b01500d68d74"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Saldo Inicial]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="58" y="29" width="82" height="10" uuid="1668b3ef-d310-4fc6-8edd-1f7e4f922880"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{saldo_inicial_arqueo_caja}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="174" y="17" width="121" height="10" uuid="fdbf34f4-767d-418f-a164-5c22bc4eb1b0"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Total Arqueo]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="174" y="29" width="121" height="10" uuid="9cc0355e-ec79-414c-891b-b75fdfd0997a"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_arqueo_caja}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="339" y="18" width="121" height="10" uuid="2edc9e29-dbd2-40b0-8e94-10439cc75725"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Diferencia Final]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="339" y="29" width="121" height="10" uuid="84c1daa6-c3a0-4c01-a884-bd161d4542e5"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{resultado_arqueo_caja}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="50" width="107" height="10" uuid="26ff6dbe-d5f6-4b89-a889-5c0087c054a6"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Observaciones de Cierre :]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="117" y="50" width="438" height="27" uuid="8af1b3e8-22e5-43a8-9582-32ab92ce0553"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{observacion_arqueo_caja}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

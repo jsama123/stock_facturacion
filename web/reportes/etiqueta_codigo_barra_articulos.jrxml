@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="etiqueta_codigo_barra_articulos" columnCount="3" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="198" leftMargin="0" rightMargin="0" topMargin="70" bottomMargin="0" uuid="5c29fd42-df67-4533-a046-c44f635c8c99">
+	<property name="ireport.zoom" value="2.9230756500000052"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="106"/>
+	<queryString>
+		<![CDATA[SELECT
+trim(to_char(id_articulo,'000000000000')) as id_articulo,
+articulo_descripcion
+FROM stock_facturacion.articulos]]>
+	</queryString>
+	<field name="id_articulo" class="java.lang.String"/>
+	<field name="articulo_descripcion" class="java.lang.String"/>
+	<detail>
+		<band height="73" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement x="12" y="39" width="171" height="30" isPrintWhenDetailOverflows="true" uuid="54914830-aee0-4a5e-bc1a-e45d0a2ffd1d"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{articulo_descripcion}]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement x="45" y="7" width="109" height="33" uuid="3cabe406-fd95-4790-80dd-d6ec04c6d4d3"/>
+				<jr:EAN13 xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" textPosition="bottom">
+					<jr:codeExpression><![CDATA[$F{id_articulo}]]></jr:codeExpression>
+				</jr:EAN13>
+			</componentElement>
+		</band>
+	</detail>
+</jasperReport>

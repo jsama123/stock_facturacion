@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rpt_ticket_venta" language="groovy" pageWidth="170" pageHeight="170" orientation="Landscape" columnWidth="130" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isSummaryWithPageHeaderAndFooter="true" isIgnorePagination="true" uuid="42daa76a-b9fe-4bd6-b01c-5a2ec59365d4">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\Jose Samaniego\\Documents\\NetBeansProjects\\stockFacturacion\\web\\reportes\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="id_venta" class="java.lang.String">
+		<defaultValueExpression><![CDATA["20"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+nro_factura_venta,
+nombre_apellido_cajero,
+to_char(fecha_venta, 'DD/MM/YYYY')as fecha,
+iva_aplicado,
+ci_ruc_cliente,
+razon_social_cliente,
+vd.id_stock,
+cantidad_venta,
+precio_unitario::int,
+articulo_descripcion,
+cantidad_venta*precio_unitario::int as sub_total,
+descripcion_tipo_pago,
+monto_pago
+FROM stock_facturacion.ventas_detalles vd
+LEFT JOIN stock_facturacion.stocks s on vd.id_stock = s.id_stock
+LEFT JOIN stock_facturacion.articulos a on a.id_articulo = s.id_articulo
+LEFT JOIN stock_facturacion.ventas v on v.id_venta = vd.id_venta
+LEFT JOIN stock_facturacion.tipos_pagos tp on tp.id_tipo_pago = v.id_tipo_pago
+LEFT JOIN stock_facturacion.clientes c1 on c1.id_cliente = v.id_cliente
+LEFT JOIN stock_facturacion.cajeros c on c.id_cajero = v.id_cajero
+WHERE vd.id_venta = $P!{id_venta}]]>
+	</queryString>
+	<field name="nro_factura_venta" class="java.lang.String"/>
+	<field name="nombre_apellido_cajero" class="java.lang.String"/>
+	<field name="fecha" class="java.lang.String"/>
+	<field name="iva_aplicado" class="java.lang.Integer"/>
+	<field name="ci_ruc_cliente" class="java.lang.String"/>
+	<field name="razon_social_cliente" class="java.lang.String"/>
+	<field name="id_stock" class="java.lang.Integer"/>
+	<field name="cantidad_venta" class="java.lang.Integer"/>
+	<field name="precio_unitario" class="java.lang.Integer"/>
+	<field name="articulo_descripcion" class="java.lang.String"/>
+	<field name="sub_total" class="java.lang.Integer"/>
+	<field name="descripcion_tipo_pago" class="java.lang.String"/>
+	<field name="monto_pago" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="95" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="58" width="130" height="10" uuid="352f5188-c899-415c-91e0-daca9553a390"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FACTURA CONTADO : "+$F{nro_factura_venta}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="52" width="130" height="10" uuid="3dd5e5a7-5336-4c99-a7c3-7bfc72ff1a2d"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<text><![CDATA[I.V.A INCLUIDO]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="64" width="130" height="9" uuid="8e8852c3-8a6e-4290-a818-55cb7b1bf47e"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FECHA : "+$F{fecha}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="70" width="130" height="14" uuid="0b7848ef-5b6e-41e7-856f-b58162bb7a5c"/>
+				<textElement>
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["RUC: "+$F{ci_ruc_cliente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="76" width="130" height="8" uuid="0d4fbf36-e991-42d4-9298-6c07c688cbaa"/>
+				<textElement>
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CLIENTE: "+$F{razon_social_cliente}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="84" width="130" height="1" uuid="75ffd746-69e6-4a5d-b26d-7604367ce25e"/>
+				<graphicElement>
+					<pen lineStyle="Dashed"/>
+				</graphicElement>
+			</line>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="9" splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="8" splitType="Stretch">
+			<textField>
+				<reportElement positionType="Float" x="0" y="0" width="13" height="8" uuid="69f1569e-5aea-4346-853a-5dd762ab714a"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{id_stock}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="13" y="0" width="39" height="8" uuid="5915ee65-16bc-44e4-aebb-81ffeaa624a6"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{articulo_descripcion}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement positionType="Float" x="52" y="0" width="16" height="8" uuid="67e9dd4e-b86a-4e40-b398-1fe3b5c28362"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidad_venta}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement positionType="Float" x="68" y="0" width="22" height="8" uuid="c86da621-87eb-4775-9623-85573762801b"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{precio_unitario}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement positionType="Float" x="90" y="0" width="24" height="8" uuid="cf976079-3b64-4a45-8577-b2795bf005dc"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{sub_total}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement positionType="Float" x="114" y="0" width="16" height="8" uuid="e9e4926f-c72f-446d-83bd-91793cf90f33"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{iva_aplicado}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="45" splitType="Stretch">
+			<staticText>
+				<reportElement x="51" y="0" width="39" height="9" uuid="6d060c40-fbbf-4603-b22e-46f9e31be866"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<text><![CDATA[DESCRIP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="51" y="9" width="39" height="9" uuid="160891eb-8230-4b24-924c-0f6c22ee19bf"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<text><![CDATA[DESCRIP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="52" y="18" width="39" height="9" uuid="029b6f69-3502-4feb-ba4f-052956d3e71e"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<text><![CDATA[DESCRIP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="52" y="27" width="39" height="9" uuid="df336223-324b-47ae-a349-738e4c00b68b"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<text><![CDATA[DESCRIP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="52" y="36" width="39" height="9" uuid="99567f64-f936-4a1f-abd7-0ede878e5bcd"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="5"/>
+				</textElement>
+				<text><![CDATA[DESCRIP]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rpt_compra_x_articulo" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="f9f04b67-23e7-41e2-9c24-d4341c429cd5">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="loginUsuario" class="java.lang.String"/>
+	<parameter name="id_articulo" class="java.lang.String">
+		<defaultValueExpression><![CDATA["12"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+v.nro_factura_venta,
+to_char(max(fecha_venta), 'DD/MM/YYYY') as fecha,
+max(articulo_descripcion) as articulo,
+max(vd.cantidad_venta) as cantidad,
+'VENTA POR SISTEMA' as tipo
+FROM stock_facturacion.ventas_detalles vd
+LEFT JOIN stock_facturacion.ventas v on v.id_venta = vd.id_venta
+LEFT JOIN stock_facturacion.stocks s on s.id_stock = vd.id_stock
+LEFT JOIN stock_facturacion.articulos a on a.id_articulo = s.id_articulo
+WHERE s.id_articulo = $P!{id_articulo} AND v.estado_venta = 1
+GROUP BY v.nro_factura_venta
+UNION
+SELECT
+v.nro_factura_venta,
+to_char(max(fecha_venta), 'DD/MM/YYYY') as fecha,
+max(articulo_descripcion) as articulo,
+max(vd.cantidad_venta) as cantidad,
+'VENTA MANUAL' as tipo
+FROM stock_facturacion.ventas_manual_detalles vd
+LEFT JOIN stock_facturacion.ventas_manual v on v.id_venta_manual = vd.id_venta_manual
+LEFT JOIN stock_facturacion.stocks s on s.id_stock = vd.id_stock
+LEFT JOIN stock_facturacion.articulos a on a.id_articulo = s.id_articulo
+WHERE s.id_articulo = $P!{id_articulo} AND v.estado_venta = 1
+GROUP BY v.nro_factura_venta
+ORDER BY 1 asc]]>
+	</queryString>
+	<field name="nro_factura_venta" class="java.lang.String"/>
+	<field name="fecha" class="java.lang.String"/>
+	<field name="articulo" class="java.lang.String"/>
+	<field name="cantidad" class="java.lang.Integer"/>
+	<field name="tipo" class="java.lang.String"/>
+	<variable name="variable1" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{cantidad}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="71"/>
+	</title>
+	<pageHeader>
+		<band height="67" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="20" uuid="96eb5d0a-27a3-4d9b-b2cd-73e5e8000253"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="14"/>
+				</textElement>
+				<text><![CDATA[SISTEMA CONTROL DE STOCK Y FACTURACION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="23" width="555" height="20" uuid="b9e9deda-61c2-4a70-94f4-d904f6ed13ff"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE VENTAS POR ARTICULO]]></text>
+			</staticText>
+			<textField>
+				<reportElement mode="Transparent" x="0" y="43" width="555" height="24" backcolor="#CCFFFF" uuid="121e5320-2d07-4d2a-8c3a-a9a24a31f117"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ARTICULO : "+$F{articulo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="24">
+			<staticText>
+				<reportElement x="34" y="0" width="170" height="20" uuid="14e83400-192d-436d-8a27-a5b1f28adb4f"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[NRO FACTURA DE VENTA]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="20" width="555" height="1" uuid="c2a16f94-5484-425a-87b1-011094db4f38"/>
+			</line>
+			<staticText>
+				<reportElement x="204" y="0" width="131" height="20" uuid="40e0b4fd-cbf3-4d48-98cc-a9bee4caf497"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[FECHA DE VENTA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="324" y="0" width="92" height="20" uuid="1f5efb1a-4376-45ac-8672-427555eeb3f7"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[CANTIDAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="416" y="0" width="92" height="20" uuid="9577b1af-5b19-48db-928a-891ebbb1ac8f"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[TIPO DE VENTA]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement x="33" y="0" width="171" height="16" uuid="3e7458b1-2ea7-47af-b11c-38894b81bce8"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nro_factura_venta}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="324" y="0" width="92" height="16" uuid="61de982d-8a7e-4565-85b0-a7cfff0b2fec"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="204" y="0" width="131" height="16" uuid="c0357e76-fa7f-44e2-a508-bb30d04c2566"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="416" y="0" width="92" height="16" uuid="3b2d3aaa-4997-4e67-a4bf-a05a3c80a8b7"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="64" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="34" width="204" height="20" uuid="dda1247d-8450-482e-91e1-b397dca36e94"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd 'de' MMMM 'de' yyyy hh:mm aaa").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="212" y="34" width="204" height="20" uuid="4b9a0212-f56a-4c2c-9a4c-893c07850523"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Impreso por "+$P{loginUsuario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch">
+			<staticText>
+				<reportElement x="212" y="5" width="131" height="20" uuid="208133c9-79b3-428a-be51-c90a00b60b1e"/>
+				<textElement textAlignment="Right">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[TOTAL VENTA:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="343" y="5" width="131" height="20" uuid="6e9ce740-cad1-4694-ae8a-55dc428a1587"/>
+				<textElement>
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{variable1}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="e2dd6e25-a85b-4257-8b99-e6346687d7d3"/>
+			</line>
+		</band>
+	</summary>
+</jasperReport>

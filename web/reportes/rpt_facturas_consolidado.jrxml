@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rpt_facturas_consolidado" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a92ef050-db6c-4763-8a9a-acbe3286951e">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="fecha_desde" class="java.lang.String">
+		<defaultValueExpression><![CDATA["2020-09-01"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fecha_hasta" class="java.lang.String">
+		<defaultValueExpression><![CDATA["2020-09-30"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="loginUsuario" class="java.lang.String">
+		<defaultValueExpression><![CDATA["admin"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+v.nro_factura_venta as nro_factura,
+sum(descuento_gs_venta+(cantidad_venta*precio_unitario::int)*descuenta_venta/100) as descuento_total,
+max(fecha_venta) as fecha_venta,
+max(ci_ruc_cliente) as ci_ruc_cliente,
+max(razon_social_cliente) as razon_social_cliente,
+sum(CASE WHEN es_desc_gs_venta THEN cantidad_venta*(precio_unitario::int-descuento_gs_venta)
+ELSE cantidad_venta*(precio_unitario::int-(precio_unitario::int*descuenta_venta/100)::int) END) as total,
+COALESCE(max(g.iva10), 0) as iva10,
+COALESCE(max(b.iva5), 0) as iva5,
+COALESCE(max(b.iva5), 0)+COALESCE(max(g.iva10), 0) as totalIva,
+sum(CASE WHEN es_desc_gs_venta THEN cantidad_venta*(precio_unitario::int-descuento_gs_venta)
+ELSE cantidad_venta*(precio_unitario::int-(precio_unitario::int*descuenta_venta/100)::int) END) -
+(COALESCE(max(b.iva5), 0)+COALESCE(max(g.iva10), 0)) as totalSinIva
+FROM stock_facturacion.ventas_detalles vd
+LEFT JOIN stock_facturacion.ventas v on v.id_venta = vd.id_venta
+LEFT JOIN stock_facturacion.clientes c1 on c1.id_cliente = v.id_cliente
+LEFT JOIN (
+SELECT
+nro_factura_venta,
+CASE WHEN max(iva_aplicado)=10 THEN sum(CASE WHEN es_desc_gs_venta THEN (cantidad_venta*(precio_unitario::int-descuento_gs_venta))*9.0909/100
+ELSE (cantidad_venta*(precio_unitario::int-(precio_unitario::int*descuenta_venta/100)::int))*9.0909/100 END)::int ELSE 0 END as iva10
+FROM stock_facturacion.ventas_detalles vd
+LEFT JOIN stock_facturacion.ventas v on v.id_venta = vd.id_venta
+WHERE fecha_venta::date >=$P{fecha_desde}::date AND fecha_venta::date<=$P{fecha_hasta}::date AND estado_venta = 1
+AND id_timbrado !='' AND iva_aplicado = 10
+GROUP BY nro_factura_venta ) g on g.nro_factura_venta = v.nro_factura_venta
+LEFT JOIN (
+SELECT
+nro_factura_venta,
+CASE WHEN min(iva_aplicado)=5 THEN sum(CASE WHEN es_desc_gs_venta THEN (cantidad_venta*(precio_unitario::int-descuento_gs_venta))*0.047619
+ELSE (cantidad_venta*(precio_unitario::int-(precio_unitario::int*descuenta_venta/100)::int))*0.047619 END)::int ELSE 0 END as iva5
+FROM stock_facturacion.ventas_detalles vd
+LEFT JOIN stock_facturacion.ventas v on v.id_venta = vd.id_venta
+WHERE fecha_venta::date >=$P{fecha_desde}::date AND fecha_venta::date<=$P{fecha_hasta}::date AND estado_venta = 1
+AND id_timbrado !='' AND iva_aplicado = 5
+GROUP BY nro_factura_venta ) b on b.nro_factura_venta = v.nro_factura_venta
+WHERE fecha_venta::date >=$P{fecha_desde}::date AND fecha_venta::date<=$P{fecha_hasta}::date AND estado_venta = 1
+AND id_timbrado !=''
+GROUP BY v.nro_factura_venta
+ORDER BY 1 asc]]>
+	</queryString>
+	<field name="nro_factura" class="java.lang.String"/>
+	<field name="descuento_total" class="java.lang.Long"/>
+	<field name="fecha_venta" class="java.sql.Timestamp"/>
+	<field name="ci_ruc_cliente" class="java.lang.String"/>
+	<field name="razon_social_cliente" class="java.lang.String"/>
+	<field name="total" class="java.lang.Long"/>
+	<field name="iva10" class="java.lang.Integer"/>
+	<field name="iva5" class="java.lang.Integer"/>
+	<field name="totaliva" class="java.lang.Integer"/>
+	<field name="totalsiniva" class="java.lang.Long"/>
+	<variable name="totalGeneral" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{total}]]></variableExpression>
+	</variable>
+	<variable name="totalIva10" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{iva10}]]></variableExpression>
+	</variable>
+	<variable name="totalIva5" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{iva5}]]></variableExpression>
+	</variable>
+	<variable name="totalIva" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{totaliva}]]></variableExpression>
+	</variable>
+	<variable name="totalVenta" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{totalsiniva}]]></variableExpression>
+	</variable>
+	<variable name="totalDesc" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{descuento_total}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="69" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="60" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="20" uuid="8e220ac1-2ef8-475d-91b6-3d4e6c91d7f7"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="14"/>
+				</textElement>
+				<text><![CDATA[SISTEMA CONTROL DE STOCK Y FACTURACION]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="40" width="555" height="20" uuid="4c60982f-d477-47cf-8b9a-39b28f7d5937"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA["DESDE : "+$P{fecha_desde}+" HASTA : "+$P{fecha_hasta}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="20" width="555" height="20" uuid="6784ad07-5c56-4834-a2cb-4d47d92dbca9"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="12"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE FACTURAS CONSOLIDADO]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="19" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="3" width="73" height="15" uuid="3e4d66fe-17be-4052-9d38-56203275e6c6"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<text><![CDATA[NRO FACTURA]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="18" width="555" height="1" uuid="53cf5f69-8e7f-47a6-8745-d705ac589d89"/>
+			</line>
+			<staticText>
+				<reportElement x="150" y="3" width="40" height="15" uuid="a5f49969-4ea1-454e-831d-6a6641bf08ca"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<text><![CDATA[CI/RUC CLIENTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="190" y="3" width="70" height="15" uuid="5bfbd4db-5ed1-4113-b04e-a1dd2b21f086"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<text><![CDATA[RAZON SOCIAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="260" y="3" width="52" height="15" uuid="673ea6a5-cfcb-43bf-a591-152e2da62163"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<text><![CDATA[TOTAL VENTA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="370" y="3" width="33" height="15" uuid="02423c48-69c5-4632-87c4-a76ea9706e9d"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<text><![CDATA[IVA 10]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="403" y="3" width="26" height="15" uuid="8f30d0f3-c956-4003-b0eb-c6f11ec72661"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<text><![CDATA[IVA 5]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="429" y="3" width="44" height="15" uuid="65c4b5d0-507b-40eb-9c2e-e435562f1054"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<text><![CDATA[TOTAL IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="73" y="3" width="77" height="15" uuid="a4714801-e383-4708-8b4b-543e2cc26422"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<text><![CDATA[FECHA VENTA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="473" y="3" width="81" height="15" uuid="2af87a08-5d93-4584-856d-da09e0af2378"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<text><![CDATA[TOTAL VENTA S/ IVA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="312" y="3" width="58" height="15" uuid="2c014c34-cf28-4d2c-947c-9b338b70de25"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<text><![CDATA[TOTAL DESC.]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="2" width="73" height="14" uuid="3d407c53-698c-4b8e-bc06-f68d5d15dc7d"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nro_factura}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="150" y="2" width="40" height="14" uuid="990a1761-2029-47cd-8b80-0771edd53717"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ci_ruc_cliente}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="190" y="2" width="70" height="14" uuid="1321aba1-4e51-4eb0-963f-5d629c4b00fb"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{razon_social_cliente}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="260" y="2" width="52" height="14" uuid="0068e611-24f2-4667-a70f-9c2a16dbe2ec"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="370" y="3" width="33" height="14" uuid="35de6bfd-93e4-42ea-9505-cf0e569dcf08"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{iva10}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="403" y="3" width="26" height="14" uuid="b074b748-0a38-4178-943e-62618ced1a99"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{iva5}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="429" y="3" width="44" height="14" uuid="90fdc2db-3ac1-4edd-b2ba-4f9f6c829094"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{totaliva}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH.mm.ss">
+				<reportElement x="73" y="2" width="77" height="14" uuid="6dd333c2-0d3b-41a8-8b9c-1ebaa9239f59"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_venta}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="473" y="3" width="80" height="14" uuid="634fd61d-027e-46ac-92d5-c64f461f5c83"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{totalsiniva}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="312" y="2" width="58" height="14" uuid="2644a4ee-93b4-44c4-8fc1-2382ce2d2f50"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descuento_total}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="227" height="20" uuid="5623e24e-cf71-4db6-b9b8-64e294edc5b8"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd 'de' MMMM 'de' yyyy hh:mm aaa").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="227" y="0" width="204" height="20" uuid="a164a51b-acc6-47e8-a100-56dc81621c50"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Impreso por "+$P{loginUsuario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="44" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="4" width="260" height="15" uuid="44d8cdf8-e66e-47c7-8bf0-f67d6c985710"/>
+				<textElement textAlignment="Right">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<text><![CDATA[TOTALES :]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="260" y="4" width="52" height="15" uuid="8af831b4-c533-42d7-b5d1-0926b515f678"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalGeneral}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="0" width="555" height="1" uuid="28b7f691-eb87-4e2e-8675-2f58c2875b67"/>
+			</line>
+			<textField pattern="#,##0">
+				<reportElement x="370" y="4" width="33" height="15" uuid="6dda7be5-db6c-40c1-84a9-77865f7e4ea9"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalIva10}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="429" y="4" width="44" height="15" uuid="e2901d04-9f97-4d21-8c85-44dfd061eb9a"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalIva}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="473" y="4" width="81" height="15" uuid="8175c9c7-e3de-4f38-9772-6e6de1d56f2a"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalVenta}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="403" y="4" width="28" height="15" uuid="4b01c54a-d881-4b09-8215-0a87aecfb973"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalIva5}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="312" y="4" width="58" height="15" uuid="54a3f71b-d263-4aed-b8a9-1ebf73d922e5"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalDesc}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rpt_ajustes_stock" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4177c7fa-06aa-455a-9c76-8bd231502075">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="loginUsuario" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+articulo_descripcion,
+deposito_sucursal_descripcion,
+a.existencia::int,
+a.cantidad,
+CASE WHEN operacion = 'R' THEN 'RESTA' ELSE 'SUMA' END as ope,
+a.observacion
+FROM stock_facturacion.ajustes_stock a
+LEFT JOIN stock_facturacion.stocks s on s.id_stock = a.id_stock
+LEFT JOIN stock_facturacion.articulos ar on ar.id_articulo = s.id_articulo
+LEFT JOIN stock_facturacion.depositos_sucursales d on d.id_deposito_sucursal = s.id_deposito_sucursal
+ORDER BY 1 asc]]>
+	</queryString>
+	<field name="articulo_descripcion" class="java.lang.String"/>
+	<field name="deposito_sucursal_descripcion" class="java.lang.String"/>
+	<field name="existencia" class="java.lang.Integer"/>
+	<field name="cantidad" class="java.lang.Integer"/>
+	<field name="ope" class="java.lang.String"/>
+	<field name="observacion" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="69" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="50" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="30" uuid="557ae5e0-7156-42b7-a608-a2ca1e938ce3"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="14"/>
+				</textElement>
+				<text><![CDATA[SISTEMA CONTROL DE STOCK Y FACTURACION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="30" width="555" height="20" uuid="f125aaec-ff87-49c5-b674-9364665dedf3"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="12"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE AJUSTES DE EXISTENCIAS]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="21" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="26" height="15" uuid="4c935777-5294-4251-80ec-2fabf273e5e3"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<text><![CDATA[ITEM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="26" y="0" width="151" height="15" uuid="dbd4c5e1-70b6-4972-9178-1702dd60be6e"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<text><![CDATA[ARTICULO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="245" y="0" width="103" height="15" uuid="5c4c1dd2-103c-4d46-b02e-1bd1b3f2d47d"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<text><![CDATA[EXISTENCIA AL AJUSTAR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="348" y="0" width="47" height="15" uuid="dd1db0dc-b94a-436a-9114-41fd46924e46"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<text><![CDATA[CANTIDAD]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="395" y="0" width="50" height="15" uuid="b99953f9-4bca-4ed7-aedb-1c7f480989f8"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<text><![CDATA[OPERACION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="445" y="0" width="110" height="15" uuid="09e3120e-7df2-4bef-975c-1dcba3d66c13"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<text><![CDATA[OBSERVACION / MOTIVO]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="15" width="555" height="1" uuid="ae0d86d0-e6a8-4dc4-92f3-b54d81b738c8"/>
+			</line>
+			<staticText>
+				<reportElement x="177" y="0" width="68" height="15" uuid="de5004cd-022a-4ab5-b084-733bdd10d7e3"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<text><![CDATA[DEPOSITO]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="17" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="26" height="12" uuid="6d4edede-a108-434a-91c5-4ec12df589d0"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{COLUMN_COUNT}+" )"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="245" y="0" width="103" height="12" uuid="9c45a6f9-8f19-4848-be5a-5abdcb5d680a"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{existencia}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="445" y="0" width="110" height="12" uuid="8e37413e-a0f7-40f5-8e35-cd0363ff2e59"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{observacion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="395" y="0" width="50" height="12" uuid="9445aafb-bf7f-42fc-967c-03a42868acc7"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ope}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="26" y="0" width="151" height="12" uuid="05387439-c05d-460d-a4dd-5bd0ce771a9a"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{articulo_descripcion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="348" y="0" width="47" height="12" uuid="8a64feb2-7ae5-4cc5-b6ef-d0721752659a"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="177" y="0" width="68" height="12" uuid="3d37de45-b152-4682-8f7d-946e257b80fa"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{deposito_sucursal_descripcion}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<textField>
+				<reportElement x="223" y="34" width="204" height="20" uuid="b3cbee71-aaec-4c5f-90ce-0bb11d587dba"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Impreso por "+$P{loginUsuario}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="34" width="227" height="20" uuid="16169ce6-dab3-44f1-8066-e0b753a21730"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd 'de' MMMM 'de' yyyy hh:mm aaa").format(new Date())]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rpt_articulos" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0236d0fd-9293-4faa-88a8-4b1d36667a99">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="loginUsuario" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT DISTINCT
+articulo_descripcion,
+max(marca_descripcion) as marca_descripcion,
+max(COALESCE(costo_venta, 0)) as precio
+FROM stock_facturacion.articulos a
+LEFT JOIN stock_facturacion.articulo_costos c on c.id_articulo = a.id_articulo
+LEFT JOIN stock_facturacion.grupos g on g.id_grupo = a.id_grupo
+LEFT JOIN stock_facturacion.marcas m on m.id_marca = a.id_marca
+<<<<<<< HEAD
+GROUP BY grupo_descripcion, id_articulo,
+articulo_descripcion, marca_descripcion
+ORDER BY 2 asc]]>
+=======
+GROUP BY articulo_descripcion
+ORDER BY marca_descripcion, articulo_descripcion asc
+]]>
+>>>>>>> 0979abddb51ef0e2f4eb19aeb392591e019497fb
+	</queryString>
+	<field name="articulo_descripcion" class="java.lang.String"/>
+	<field name="marca_descripcion" class="java.lang.String"/>
+	<field name="precio" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="69"/>
+	</title>
+	<pageHeader>
+		<band height="51" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="30" uuid="2c3975e1-ddfb-40b7-ac0b-7d28cf5fd305"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="14"/>
+				</textElement>
+				<text><![CDATA[SISTEMA CONTROL DE STOCK Y FACTURACION]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="30" width="555" height="20" uuid="6ddc61f2-6413-4e03-946b-e1fdfbee5c0c"/>
+				<textElement textAlignment="Center">
+					<font fontName="DejaVu Sans" size="12"/>
+				</textElement>
+				<text><![CDATA[CATALOGO DE ARTICULOS]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="16">
+			<staticText>
+				<reportElement x="362" y="0" width="91" height="15" uuid="7e5d0e13-79f5-43f3-a992-628d7796b3a6"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<text><![CDATA[MARCA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="453" y="0" width="102" height="15" uuid="a3d05337-85d4-4667-b796-3f7091f31cdf"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<text><![CDATA[PRECIO DE VENTA]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="15" width="555" height="1" uuid="c1026450-f31c-4f42-b547-93753d1b4190"/>
+			</line>
+			<staticText>
+				<reportElement x="56" y="1" width="306" height="15" uuid="585ebdf0-3db0-420e-a97d-3a940e217957"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<text><![CDATA[ARTICULO]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement x="56" y="10" width="306" height="12" uuid="017c41be-11e8-4198-8011-b486621d5057"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{articulo_descripcion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement x="362" y="10" width="91" height="12" uuid="34f53a45-e2b3-431c-82bd-10fb5d575347"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{marca_descripcion}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="#,##0">
+				<reportElement x="453" y="10" width="102" height="12" uuid="5f1e94d7-ee67-42b6-966f-a7bca186e9e6"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{precio}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="33" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="12" width="204" height="20" uuid="d209ac55-7e79-48ef-99b1-3eab2ec620b0"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd 'de' MMMM 'de' yyyy hh:mm aaa").format(new Date())]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="214" y="12" width="204" height="20" uuid="2ee5de7d-ab0d-4977-bbe5-c7753919f029"/>
+				<textElement>
+					<font fontName="DejaVu Sans" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Impreso por "+$P{loginUsuario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
